@@ -1,10 +1,10 @@
 const Pool = require('pg').Pool;
 
 const pool = new Pool({
-    user: 'cadastro',
-    host: 'localhost',
-    database: 'cadastro',
-    password: 'cadastro',
+    user: process.env.POSTGRES_USER,
+    host: process.env.POSTGRES_HOST,
+    database: process.env.POSTGRES_DB,
+    password: process.env.POSTGRES_PASSWORD,
     port: 5432,
 });
 
@@ -31,23 +31,25 @@ const getCandidatosById = (request, response) => {
 }
 
 const createCandidato = (request, response) => {
-    const { nome, cpf, data_nascimento, sexo, endereco,
+    const { nome, cpf, data_nascimento, cep, rua, bairro, cidade, uf, sexo,
             telefone, email, cargo_pretendido, estado_civil,
             instituicao_ensino, nivel_formacao, profissao, detalhes } = request.body
-  
+            
+    const endereco = '{ "cep": "' + cep + '",  "rua": "' + rua +'", "bairro": "' + bairro + '", "cidade" : "' + cidade + '", "uf" : "' + uf + '"}'; 
     pool.query(
-        'INSERT INTO candidatos (nome, cpf, data_nascimento, sexo, endereco' +
+        'INSERT INTO candidatos (nome, cpf, data_nascimento, sexo, endereco,' +
         'telefone, email, cargo_pretendido, estado_civil,' +
         'instituicao_ensino, nivel_formacao, profissao, detalhes)' +
-        'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)', 
+        'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *', 
         [nome, cpf, data_nascimento, sexo, endereco,
             telefone, email, cargo_pretendido, estado_civil,
             instituicao_ensino, nivel_formacao, profissao, detalhes]
             , (error, results) => {
                 if (error) {
-                    throw error;
+                    response.status(409).send(`Erro em cadastrar o candidato: ${error.stack}`);
                 }
-        response.status(201).send(`Candidato adicionado com o ID: ${result.insertId}`);
+        // console.log(results.rows[0]['id']);
+        response.status(201).send(`Candidato adicionado com o ID: ${results.rows[0]['id']}`);
     });
 }
 
@@ -56,9 +58,9 @@ const deleteCandidato = (request, response) => {
   
     pool.query('DELETE FROM candidato WHERE id = $1', [id], (error, results) => {
       if (error) {
-        throw error;
+        return console.error(`Erro em deletar o candidato de ID ${id}`);
       }
-      response.status(200).send(`Usuário com ID foi deletado: ${id}`)
+      response.status(200).send(`Usuário com ID foi deletado: ${id}`);
     });
 }
 

@@ -4,9 +4,156 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
     <title>Document</title>
 </head>
 <body>
-    <h1>Hello World</h1>
+    <form id="formCandidato" action="candidatos" method="POST">
+        <div class="mb-3" class="form-row">
+            <label for="nome" class="form-label">Nome:</label>
+            <input type="text" name="nome" id="nome" class="form-control">
+        </div>
+         <div class="mb-3" class="form-row">
+            <label for="cpf"  class="form-label">CPF:</label>
+            <input type="text" name="cpf" id="cpf" class="form-control" maxlength="13">
+        </div>
+        <div class="mb-3" class="form-row">
+            <label for="nascimento" class="form-label">nascimento:</label>
+            <input type="text" name="data_nascimento" id="data_nascimento" class="form-control">
+        </div>
+        <div class="mb-3" class="form-row">
+            <label for="cep" class="form-label">CEP:</label>
+            <input type="text" name="cep" id="cep" class="form-control" value="" size="10" maxlength="9"
+                onblur="pesquisacep(this.value);">
+        </div>
+        <div class="mb-3" class="form-row">
+            <label for="rua" class="form-label">Rua:</label>
+            <input type="text" name="rua" id="rua" class="form-control">
+        </div>
+        <div class="mb-3" class="form-row">
+            <label for="bairro" class="form-label">Bairro:</label>
+            <input type="text" name="bairro" id="bairro" class="form-control">
+        </div>
+        <div class="mb-3" class="form-row">
+            <label for="cidade" class="form-label">Cidade:</label>
+            <input type="text" name="cidade" id="cidade" class="form-control">
+        </div>
+        <div class="mb-3" class="form-row">
+            <label for="uf" class="form-label">UF:</label>
+            <input type="text" name="uf" id="uf" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="sexo" class="form-label">sexo</label>
+            <input type="text" name="sexo" id="sexo" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="telefone" class="form-label">telefone:</label>
+            <input type="text" name="telefone" id="telefone" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">email:</label>
+            <input type="email" name="email" id="email" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="cargo_pretendido" class="form-label">cargo pretendido:</label>
+            <input type="text" name="cargo_pretendido" id="cargo_pretendido" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="estado_civil" class="form-label">estado_civil:</label>
+            <select name="estado_civil" id="estado_civil" class="form-control">
+                <option value="Solteiro">Solteiro</option>
+                <option value="Casado">Casado</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="estado_civil" class="form-label">instituicao_ensino:</label>
+            <input type="text" name="instituicao_ensino" id="instituicao_ensino" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="nivel_formacao" class="form-label">nivel_formacao:</label>
+            <input type="text" name="nivel_formacao" id="nivel_formacao" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="estado_civil" class="form-label">profissao:</label>
+            <input type="text" name="profissao" id="profissao" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="detalhes" class="form-label">detalhes:</label>
+            <input type="textarea" name="detalhes" id="detalhes" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+
+<script>
+
+    // Busca Endereco pelo CEP
+    function limpa_formulário_cep() {
+    //Limpa valores do formulário de cep.
+    document.getElementById('rua').value=("");
+    document.getElementById('bairro').value=("");
+    document.getElementById('cidade').value=("");
+    document.getElementById('uf').value=("");
+}
+
+function meu_callback(conteudo) {
+if (!("erro" in conteudo)) {
+    //Atualiza os campos com os valores.
+    document.getElementById('rua').value=(conteudo.logradouro);
+    document.getElementById('bairro').value=(conteudo.bairro);
+    document.getElementById('cidade').value=(conteudo.localidade);
+    document.getElementById('uf').value=(conteudo.uf);
+} //end if.
+else {
+    //CEP não Encontrado.
+    limpa_formulário_cep();
+    alert("CEP não encontrado.");
+}
+}
+
+function pesquisacep(valor) {
+
+//Nova variável "cep" somente com dígitos.
+var cep = valor.replace(/\D/g, '');
+
+//Verifica se campo cep possui valor informado.
+if (cep != "") {
+
+    //Expressão regular para validar o CEP.
+    var validacep = /^[0-9]{8}$/;
+
+    //Valida o formato do CEP.
+    if(validacep.test(cep)) {
+
+        //Preenche os campos com "..." enquanto consulta webservice.
+        document.getElementById('rua').value="...";
+        document.getElementById('bairro').value="...";
+        document.getElementById('cidade').value="...";
+        document.getElementById('uf').value="...";
+
+        //Cria um elemento javascript.
+        var script = document.createElement('script');
+
+        //Sincroniza com o callback.
+        script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=meu_callback';
+
+        //Insere script no documento e carrega o conteúdo.
+        document.body.appendChild(script);
+
+    } //end if.
+    else {
+        //cep é inválido.
+        limpa_formulário_cep();
+        alert("Formato de CEP inválido.");
+    }
+} //end if.
+else {
+    //cep sem valor, limpa formulário.
+    limpa_formulário_cep();
+}
+};
+</script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/buscaCEP.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 </body>
 </html>

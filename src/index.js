@@ -1,16 +1,20 @@
 const express = require('express');
+require('dotenv').config();
 const db = require('./queries');
+var cors = require('cors');
 const path = require('path');
 const app = express();
 const port = 3000;
 app.use(express.json());
+app.use(cors());
+app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.urlencoded({
     extended: true,
   }));
 
 // Landing page
 app.get('/', (request, response) => {
-    response.sendFile(__dirname+'/public/index.html');
+    response.sendFile(path.join(__dirname, '../public/', 'index.html'));
 });
 
 app.get('/candidatos', db.getCandidatos);
