@@ -30,17 +30,17 @@ const getCandidatosById = (request, response) => {
 }
 
 const createCandidato = (request, response) => {
-    const { nome, cpf, data_nascimento, cep, rua, bairro, cidade, uf, sexo,
+    const { nome, cpf, data_nascimento, cep, rua, bairro, cidade, uf, genero,
             telefone, email, cargo_pretendido, estado_civil,
             instituicao_ensino, nivel_formacao, profissao, detalhes } = request.body
             
     const endereco = '{ "cep": "' + cep + '",  "rua": "' + rua +'", "bairro": "' + bairro + '", "cidade" : "' + cidade + '", "uf" : "' + uf + '"}'; 
     pool.query(
-        'INSERT INTO candidatos (nome, cpf, data_nascimento, sexo, endereco,' +
+        'INSERT INTO candidatos (nome, cpf, data_nascimento, genero, endereco,' +
         'telefone, email, cargo_pretendido, estado_civil,' +
         'instituicao_ensino, nivel_formacao, profissao, detalhes)' +
         'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *', 
-        [nome, cpf, data_nascimento, sexo, endereco,
+        [nome, cpf, data_nascimento, genero, endereco,
             telefone, email, cargo_pretendido, estado_civil,
             instituicao_ensino, nivel_formacao, profissao, detalhes]
             , (error, results) => {
