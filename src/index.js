@@ -4,7 +4,7 @@ const db = require('./queries');
 var cors = require('cors');
 const path = require('path');
 const app = express();
-const port = 80;
+const port = process.env.PORT;
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, '../public')));
